@@ -1,0 +1,2247 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<wsdl:definitions xmlns:wswa="http://www.w3.org/2006/02/addressing/wsdl" xmlns:tsmd="http://www.telkom.co.za/2009/03/ServiceMetaData" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tksa="http://www.telkom.co.za" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:jms="http://www.openuri.org/2002/04/wsdl/jms/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:cw="http://www.openuri.org/2002/04/wsdl/conversation/" xmlns:conv="http://www.openuri.org/2002/04/soap/conversation/" targetNamespace="http://www.telkom.co.za">
+<wsdl:types>
+<xsd:schema targetNamespace="http://www.telkom.co.za/2009/03/ServiceMetaData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0" attributeFormDefault="unqualified" elementFormDefault="qualified">
+<xsd:simpleType name="CorrelationIdStringType">
+<xsd:restriction base="xsd:string">
+<xsd:minLength value="1"/>
+<xsd:maxLength value="64"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:complexType name="CorrelationIdType">
+<xsd:simpleContent>
+<xsd:extension base="tsmd:CorrelationIdStringType">
+<xsd:anyAttribute processContents="lax" namespace="##other"/>
+</xsd:extension>
+</xsd:simpleContent>
+</xsd:complexType>
+<xsd:element name="CorrelationId" type="tsmd:CorrelationIdType">
+<xsd:annotation>
+<xsd:documentation>This is an optional identifier to be used by a system when several technical transactions are representing one business transaction. Example: Business transaction implemented via a request and call-back transaction. The call-back will have a new MessageId as it is a new message but might have the same CorrelationId. The definition of the values is owned by the system sending the transaction.</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:simpleType name="SenderIdStringType" final="restriction">
+<xsd:restriction base="xsd:string">
+<xsd:minLength value="1"/>
+<xsd:maxLength value="64"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:complexType name="SenderIdType">
+<xsd:simpleContent>
+<xsd:extension base="tsmd:SenderIdStringType">
+<xsd:anyAttribute processContents="lax" namespace="##other"/>
+</xsd:extension>
+</xsd:simpleContent>
+</xsd:complexType>
+<xsd:element name="SenderId" type="tsmd:SenderIdType">
+<xsd:annotation>
+<xsd:documentation>This is the identifier of the sending system.</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element name="GeneratedTimeStamp">
+<xsd:annotation>
+<xsd:documentation>This should be the timestamp for when the XML document was generated.</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType>
+<xsd:simpleContent>
+<xsd:extension base="xsd:dateTime">
+<xsd:anyAttribute processContents="lax" namespace="##other"/>
+</xsd:extension>
+</xsd:simpleContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="SentTimeStamp">
+<xsd:annotation>
+<xsd:documentation>This should be the timestamp for when the XML document was sent. It is important when a message will reside on a queue with retries etc and might only be sent later. The field should be re-set for every retry. The field is optional and if not present will be assumed to be the same as the GeneratedTimeStamp.</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType>
+<xsd:simpleContent>
+<xsd:extension base="xsd:dateTime">
+<xsd:anyAttribute processContents="lax" namespace="##other"/>
+</xsd:extension>
+</xsd:simpleContent>
+</xsd:complexType>
+</xsd:element>
+</xsd:schema>
+<xs:schema targetNamespace="http://www.w3.org/2005/08/addressing" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://www.w3.org/2005/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema" finalDefault="" blockDefault="#all">
+<!-- Constructs from the WS-Addressing Core -->
+<xs:element name="EndpointReference" type="tns:EndpointReferenceType"/>
+<xs:complexType name="EndpointReferenceType" mixed="false">
+<xs:sequence>
+<xs:element name="Address" type="tns:AttributedURIType"/>
+<xs:element minOccurs="0" ref="tns:ReferenceParameters"/>
+<xs:element minOccurs="0" ref="tns:Metadata"/>
+<xs:any processContents="lax" namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:complexType>
+<xs:element name="ReferenceParameters" type="tns:ReferenceParametersType"/>
+<xs:complexType name="ReferenceParametersType" mixed="false">
+<xs:sequence>
+<xs:any processContents="lax" namespace="##any" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:complexType>
+<xs:element name="Metadata" type="tns:MetadataType"/>
+<xs:complexType name="MetadataType" mixed="false">
+<xs:sequence>
+<xs:any processContents="lax" namespace="##any" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:complexType>
+<xs:element name="MessageID" type="tns:AttributedURIType"/>
+<xs:element name="RelatesTo" type="tns:RelatesToType"/>
+<xs:complexType name="RelatesToType" mixed="false">
+<xs:simpleContent>
+<xs:extension base="xs:anyURI">
+<xs:attribute name="RelationshipType" type="tns:RelationshipTypeOpenEnum" default="http://www.w3.org/2005/08/addressing/reply" use="optional"/>
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+<xs:simpleType name="RelationshipTypeOpenEnum">
+<xs:union memberTypes="tns:RelationshipType xs:anyURI"/>
+</xs:simpleType>
+<xs:simpleType name="RelationshipType">
+<xs:restriction base="xs:anyURI">
+<xs:enumeration value="http://www.w3.org/2005/08/addressing/reply"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ReplyTo" type="tns:EndpointReferenceType"/>
+<xs:element name="From" type="tns:EndpointReferenceType"/>
+<xs:element name="FaultTo" type="tns:EndpointReferenceType"/>
+<xs:element name="To" type="tns:AttributedURIType"/>
+<xs:element name="Action" type="tns:AttributedURIType"/>
+<xs:complexType name="AttributedURIType" mixed="false">
+<xs:simpleContent>
+<xs:extension base="xs:anyURI">
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+<!-- Constructs from the WS-Addressing SOAP binding -->
+<xs:attribute name="IsReferenceParameter" type="xs:boolean"/>
+<xs:simpleType name="FaultCodesOpenEnumType">
+<xs:union memberTypes="tns:FaultCodesType xs:QName"/>
+</xs:simpleType>
+<xs:simpleType name="FaultCodesType">
+<xs:restriction base="xs:QName">
+<xs:enumeration value="tns:InvalidAddressingHeader"/>
+<xs:enumeration value="tns:InvalidAddress"/>
+<xs:enumeration value="tns:InvalidEPR"/>
+<xs:enumeration value="tns:InvalidCardinality"/>
+<xs:enumeration value="tns:MissingAddressInEPR"/>
+<xs:enumeration value="tns:DuplicateMessageID"/>
+<xs:enumeration value="tns:ActionMismatch"/>
+<xs:enumeration value="tns:MessageAddressingHeaderRequired"/>
+<xs:enumeration value="tns:DestinationUnreachable"/>
+<xs:enumeration value="tns:ActionNotSupported"/>
+<xs:enumeration value="tns:EndpointUnavailable"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="RetryAfter" type="tns:AttributedUnsignedLongType"/>
+<xs:complexType name="AttributedUnsignedLongType" mixed="false">
+<xs:simpleContent>
+<xs:extension base="xs:unsignedLong">
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+<xs:element name="ProblemHeaderQName" type="tns:AttributedQNameType"/>
+<xs:complexType name="AttributedQNameType" mixed="false">
+<xs:simpleContent>
+<xs:extension base="xs:QName">
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+<xs:element name="ProblemIRI" type="tns:AttributedURIType"/>
+<xs:element name="ProblemAction" type="tns:ProblemActionType"/>
+<xs:complexType name="ProblemActionType" mixed="false">
+<xs:sequence>
+<xs:element minOccurs="0" ref="tns:Action"/>
+<xs:element name="SoapAction" type="xs:anyURI" minOccurs="0"/>
+</xs:sequence>
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:complexType>
+</xs:schema>
+<xs:schema targetNamespace="http://www.w3.org/2006/02/addressing/wsdl" elementFormDefault="qualified" xmlns:tns="http://www.w3.org/2006/02/addressing/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" blockDefault="#all">
+<xs:element name="ServiceName" type="tns:ServiceNameType"/>
+<xs:complexType name="ServiceNameType">
+<xs:simpleContent>
+<xs:extension base="xs:QName">
+<xs:attribute name="EndpointName" type="xs:NCName" use="optional"/>
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+<xs:element name="InterfaceName" type="tns:AttributedQNameType"/>
+<xs:complexType name="AttributedQNameType">
+<xs:simpleContent>
+<xs:extension base="xs:QName">
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+<xs:attribute name="Action" type="xs:anyURI"/>
+<xs:element name="UsingAddressing">
+<xs:complexType>
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:complexType>
+</xs:element>
+<xs:simpleType name="AnonymousType">
+<xs:restriction base="xs:token">
+<xs:enumeration value="optional"/>
+<xs:enumeration value="required"/>
+<xs:enumeration value="prohibited"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="Anonymous">
+<xs:complexType>
+<xs:simpleContent>
+<xs:extension base="tns:AnonymousType">
+<xs:anyAttribute processContents="lax" namespace="##other"/>
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+</xs:element>
+</xs:schema>
+<schema targetNamespace="http://eai.telkom.co.za/Billing/TopUpEnquiryManage" version="0.03" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://eai.telkom.co.za/Billing/TopUpEnquiryManage" xmlns:T="http://eai.telkom.co.za/Billing_Types" xmlns="http://www.w3.org/2001/XMLSchema">
+<import namespace="http://eai.telkom.co.za/Billing_Types"/>
+<element name="TopUpEnquiryManage">
+<annotation>
+<documentation>The managing of the enquiry part of the whole top-up process</documentation>
+</annotation>
+<complexType>
+<choice>
+<element name="Request">
+<complexType>
+<complexContent>
+<extension base="tns:Request_type"/>
+</complexContent>
+</complexType>
+</element>
+<element name="Response" type="tns:Response_type"/>
+</choice>
+</complexType>
+</element>
+<complexType name="Request_type">
+<annotation>
+<documentation>container type for the request payload</documentation>
+</annotation>
+<sequence>
+<element name="TransactionType" type="T:TransactionType_Type">
+<annotation>
+<documentation>Identifies type of transaction. In this case it will have the value of [010] which will tell that this is the initial validation transaction.</documentation>
+</annotation>
+</element>
+<element name="TopUpReferenceNumber" type="T:TopUpReferenceNumber_Type" minOccurs="0"/>
+<element name="SessionID" type="T:SessionID_Type" minOccurs="0">
+<annotation>
+<documentation>Generated by the bank and incremented by one at the end of day. It is used to identify all transactions between the Bank and Telkom for a day and will be used for reconciliation between Telkom and the Bank. required when the merchant is a bank</documentation>
+</annotation>
+</element>
+<element name="MerchantID" type="T:MerchantID_Type">
+<annotation>
+<documentation>An identification of a Telkom internal merchant who is registered on the DPRS to do recharge transactions.</documentation>
+</annotation>
+</element>
+<element name="TerminalID" type="T:TerminalID_Type">
+<annotation>
+<documentation>A value that uniquely identify the terminal at the Merchant where the transaction originated from</documentation>
+</annotation>
+</element>
+<choice>
+<element name="ProductID" type="T:ProductID_Type">
+<annotation>
+<documentation>SAP material code used to identify on which platform (ESP or IN or Huawei CBS or GetMo) this enquiry transaction will be done.</documentation>
+</annotation>
+</element>
+<element name="ServiceType" type="T:ServiceType">
+<annotation>
+<documentation>Type of service to validate. this value is only required when the ProductID is unknown. Format is all positive integers between 1 and 9. where 1 indicates WCDMA, 2 indicates WorldCall and 3 indicates PrepaidFone</documentation>
+</annotation>
+</element>
+</choice>
+<element name="CallingLineID" type="T:CallingLineID_Type">
+<annotation>
+<documentation>Serivce identifier. a number that uniquely identifies a customers service. for WCDMA and PrepaidFone value wil be the DN and for WorldCall the value is the card number</documentation>
+</annotation>
+</element>
+<choice>
+<element name="RequestedAmount" type="T:TopUpAmount_Type">
+<annotation>
+<documentation>Amount to recharge account with in minor denomination plus sign. where R50.00 will be represented as +5000</documentation>
+</annotation>
+</element>
+<element name="VoucherInfo">
+<annotation>
+<documentation>Details of the prepaid voucher</documentation>
+</annotation>
+<complexType>
+<sequence>
+<element name="VoucherNumber" type="T:VoucherNumber_Type">
+<annotation>
+<documentation>Voucher number.</documentation>
+</annotation>
+</element>
+<element name="VoucherPIN" type="T:PINType">
+<annotation>
+<documentation>pin number of the voucher</documentation>
+</annotation>
+</element>
+</sequence>
+</complexType>
+</element>
+</choice>
+<element name="ServicePackCode" type="T:ServicePackCode_Type" minOccurs="0">
+<annotation>
+<documentation>Value which identifies the specific bundle to be recharged. Only applicable for Data Bundles, SMS/MMS bundles and WIFI bundles.</documentation>
+</annotation>
+</element>
+</sequence>
+</complexType>
+<complexType name="Response_type">
+<annotation>
+<documentation>container type for teh response payload</documentation>
+</annotation>
+<sequence>
+<element name="Result" type="T:Result_type"/>
+<element name="Payload" minOccurs="0">
+<complexType>
+<sequence>
+<element name="TransactionType" type="T:TransactionType_Type">
+<annotation>
+<documentation>Identifies type of transaction. In this case it will have the value of [011] which will indicate that this is the response to the initial validation transaction</documentation>
+</annotation>
+</element>
+<element name="TopUpReferenceNumber" type="T:TopUpReferenceNumber_Type">
+<annotation>
+<documentation>A unique reference number per top-up transaction.</documentation>
+</annotation>
+</element>
+<element name="RechargeAmount" type="T:TopUpAmount_Type">
+<annotation>
+<documentation>The amount the card or phone will be recharged with, in minor denomination, i.e. to recharge R50, this field will contain 5000. This amount includes the value of the DiscountAmount. (= RequestedAmount + DiscountAmount) value in minor denomination plus sign</documentation>
+</annotation>
+</element>
+<element name="DiscountAmount" type="T:TopUpAmount_Type">
+<annotation>
+<documentation>This is the amount the client will get discounted on. It gets added to the Requested amount to calculate the Recharge amount. Discount value in minor denomination plus sign.</documentation>
+</annotation>
+</element>
+<element name="SessionID" type="T:SessionID_Type" minOccurs="0">
+<annotation>
+<documentation>Generated by the bank and incremented by one at the end of day. It is used to identify all transactions between the Bank and Telkom for a day and will be used for reconciliation between Telkom and the Bank. required when the merchant is a bank</documentation>
+</annotation>
+</element>
+<element name="CardNumber" type="T:CardNumber_Type" minOccurs="0">
+<annotation>
+<documentation>Serivce identifier. a number that uniquely identifies a customers service. for WCDMA and PrepaidFone value wil be the DN and for WorldCall the value is the card number</documentation>
+</annotation>
+</element>
+<element name="MainAccount" type="T:AccountDetails_Type">
+<annotation>
+<documentation>Details of the main account</documentation>
+</annotation>
+</element>
+<element name="SubAccount" type="T:AccountDetails_Type" minOccurs="0" maxOccurs="5">
+<annotation>
+<documentation>Details of teh sub-accounts. this is only available for multi-account services</documentation>
+</annotation>
+</element>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</schema>
+<schema targetNamespace="http://eai.telkom.co.za/Billing/TopUpRechargeManage" version="0.06" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://eai.telkom.co.za/Billing/TopUpRechargeManage" xmlns:T="http://eai.telkom.co.za/Billing_Types" xmlns="http://www.w3.org/2001/XMLSchema">
+<import namespace="http://eai.telkom.co.za/Billing_Types"/>
+<element name="TopUpRechargeManage">
+<annotation>
+<documentation>The request for top-up on a WorldCall card or a Prepaid card</documentation>
+</annotation>
+<complexType>
+<choice>
+<element name="Request" type="tns:Request_type"/>
+<element name="Response" type="tns:Response_type"/>
+</choice>
+</complexType>
+</element>
+<complexType name="Request_type">
+<sequence>
+<element name="TransactionType" type="T:TransactionType_Type">
+<annotation>
+<documentation>Identifies type of transaction. In this case it will have the value of [020] which will indicate that this is the initial topup transaction.</documentation>
+</annotation>
+</element>
+<element name="TopUpReferenceNumber" type="T:TopUpReferenceNumber_Type" minOccurs="0">
+<annotation>
+<documentation>A unique reference number per top-up transaction. This value is only optional when no validation(010) was done upfront</documentation>
+</annotation>
+</element>
+<element name="SessionID" type="T:SessionID_Type" minOccurs="0">
+<annotation>
+<documentation>Generated by the bank and incremented by one at the end of day. It is used to identify all transactions between the Bank and Telkom for a day and will be used for reconciliation between Telkom and the Bank. required when the merchant is a bank</documentation>
+</annotation>
+</element>
+<element name="MechantId" type="T:MerchantID_Type" minOccurs="0">
+<annotation>
+<documentation>An identification of a Telkom internal merchant who is registered on the DPRS to do recharge transactions.</documentation>
+</annotation>
+</element>
+<element name="TerminalId" type="T:TerminalID_Type" minOccurs="0">
+<annotation>
+<documentation>A value that uniquely identify the terminal at the Merchant where the transaction originated from</documentation>
+</annotation>
+</element>
+<element name="ServiceId" type="T:CallingLineID_Type" minOccurs="0">
+<annotation>
+<documentation>customer's prepaid service identifier. i.e WorldCall card number, WCDMA or PPF DN, or Telkom internet username for Getmo(Do Music)</documentation>
+</annotation>
+</element>
+<element name="SubAccountID" type="T:AccountID_Type" minOccurs="0">
+<annotation>
+<documentation>account identifier for multi acount services. possible values is all integers in teh range 0 to 5. where 0 indicates the main account and 1 to 5 indicate the specific sub-account. default value is 0 for non-multi account services</documentation>
+</annotation>
+</element>
+<element name="ProductId" type="T:ProductID_Type" minOccurs="0">
+<annotation>
+<documentation>SAP material code used to identify on which platform (ESP or IN or Huawei CBS or GetMo) this enquiry transaction will be done. this field is only optional if this transaction is preceded by an account validation</documentation>
+</annotation>
+</element>
+<choice minOccurs="0">
+<sequence>
+<element name="CreditCardNumber" type="T:CreditCardNumber_Type">
+<annotation>
+<documentation>The number embossed on the front of a credit card and encoded on track 2 of the magnetic stripe. It identifies the cardholder and the card issuer. field is only mandatory when Merchant is either Telkom IVR or Telkom Web</documentation>
+</annotation>
+</element>
+<element name="CVV2" type="T:CVV2_Type">
+<annotation>
+<documentation>This is a well known abbreviation for the card verification value. It represents 3 digits printed at the back of the customer credit card.</documentation>
+</annotation>
+</element>
+<element name="CardExpiryDate" type="T:CardExpiryDate_Type">
+<annotation>
+<documentation>This is a date that can be found on the front of a credit card. The format of this date is MMYY and it represents the year and month after which the card expires</documentation>
+</annotation>
+</element>
+<element name="NameOnCard" type="T:NameOnCard_Type">
+<annotation>
+<documentation>The name of the card holder as it appears on the front of the credit card.</documentation>
+</annotation>
+</element>
+</sequence>
+<sequence>
+<element name="VoucherInfo">
+<annotation>
+<documentation>Details of the voucher. this element is only mandatory when marchant is CVMRS</documentation>
+</annotation>
+<complexType>
+<sequence>
+<element name="VoucherNumber" type="T:VoucherNumber_Type">
+<annotation>
+<documentation>unique voucher identifiction number</documentation>
+</annotation>
+</element>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</choice>
+<element name="RechargeAmount" type="T:AmountCentsValue_Type" minOccurs="0">
+<annotation>
+<documentation>amount to topup account with. value is in minor denomination and also includes the sign. e.g if amount is R50.00 then value would be +5000</documentation>
+</annotation>
+</element>
+<element name="CAVV" type="T:CAVVType" minOccurs="0">
+<annotation>
+<documentation>Cardholder Authentication Verification Value, Authentication Verification Value (AVV) or Universal Cardholder Authentication Field (UCAF) - should be passed to bank in the Funds Reservation transaction signifying that the transaction has been successfully authenticated. Field will be Base64 encoded</documentation>
+</annotation>
+</element>
+<element name="TransactionXId" type="T:TransactionID_Type" minOccurs="0">
+<annotation>
+<documentation>Uniaque transaction identifier for the 3D secure authentication process. Field will Base64 encoded</documentation>
+</annotation>
+</element>
+<element name="ECIFlag" type="T:ECIFlagType" minOccurs="0">
+<annotation>
+<documentation>Electronic Commerce Indicator. This is the value that indicates whether the merchant or the card issuer carries the liability of a payment in terms of charge backs that may arise as a result of fraudulent transactions. MasterCard ECI (01,02) 01 - Indicates Merchant liability 02 - Indicates Card Issuer Liability Visa ECI (05,06,07) 05 - Indicates Card Issuer Liability 06 - Indicates Card Issuer Liability 07 - Indicates Merchant Liability. This field is required for all merchants participating in the 3D secure scheme.</documentation>
+</annotation>
+</element>
+<element name="ServicePackCode" type="T:ServicePackCode_Type" minOccurs="0">
+<annotation>
+<documentation>Value which identifies the specific bundle to be recharged. Only applicable for Data Bundles, SMS/MMS bundles and WIFI bundles.</documentation>
+</annotation>
+</element>
+</sequence>
+</complexType>
+<complexType name="Response_type">
+<sequence>
+<element name="Result" type="T:Result_type">
+<annotation>
+<documentation>Container type for the result</documentation>
+</annotation>
+</element>
+<element name="Payload" minOccurs="0">
+<annotation>
+<documentation>container type for the result payload</documentation>
+</annotation>
+<complexType>
+<sequence>
+<element name="TransactionType" type="T:TransactionType_Type">
+<annotation>
+<documentation>Identifies type of transaction. In this case it will have the value of [021] which will indicate that this is the response to the topup transaction</documentation>
+</annotation>
+</element>
+<element name="TopUpReferenceNumber" type="T:TopUpReferenceNumber_Type">
+<annotation>
+<documentation>A unique reference number per top-up transaction.</documentation>
+</annotation>
+</element>
+<element name="SessionID" type="T:SessionID_Type" minOccurs="0">
+<annotation>
+<documentation>Generated by the bank and incremented by one at the end of day. It is used to identify all transactions between the Bank and Telkom for a day and will be used for reconciliation between Telkom and the Bank. required when the merchant is a bank</documentation>
+</annotation>
+</element>
+<element name="CardNumber" type="T:CardNumber_Type">
+<annotation>
+<documentation>customer's prepaid service identifier. i.e WorldCall card number, WCDMA or PPF DN</documentation>
+</annotation>
+</element>
+<element name="AccountStatus" type="T:AccountStatus_Type">
+<annotation>
+<documentation>This value indicates the status of the account on ESP/IN Platform. (e.g. ESP: A = ?available? Top-up allowed, L = ?locked? Top-up allowed, C = [cancelled] Top-up NOT allowed, E = [expired] Top-up NOT allowed, I = [in use] Top-up NOT allowed, P = [pending] Top-up NOT allowed, IN Platform: 0 = [valid] Top-up NOT allowed - customer should purchase starter pack to activate account, 1 = [active] Top-up allowed, 2 = [out of credit] Top-up allowed, 3 = suspended Top-up allowed, 4 = expired Top-up NOT allowed, 5 = dismantle Top-up NOT allowed Huawei CBS Plaform: [idle] = new prepaid customer, [active] = normal status, [suspend] = call and receive blocked, [disable] = only calls blocked, [pool] = subscriber cancelled. GetMo: default value is active</documentation>
+</annotation>
+</element>
+<element name="AccountBalance" type="T:TopUpAmount_Type">
+<annotation>
+<documentation>Current account balance on the ESP/IN Platform/Huawei CBS Platform.</documentation>
+</annotation>
+</element>
+<element name="RechargeAmount" type="T:TopUpAmount_Type">
+<annotation>
+<documentation>The amount the card or phone will be recharged with, in minor denomination, i.e. to recharge R50, this field will contain 5000. This amount includes the value of the DiscountAmount. (= RequestedAmount + DiscountAmount) value in minor denomination plus sign</documentation>
+</annotation>
+</element>
+<element name="DiscountAmount" type="T:TopUpAmount_Type">
+<annotation>
+<documentation>This is the amount the client will get discounted on. It gets added to the Requested amount to calculate the Recharge amount. Discount value in minor denomination plus sign.</documentation>
+</annotation>
+</element>
+</sequence>
+</complexType>
+</element>
+</sequence>
+</complexType>
+</schema>
+<schema targetNamespace="http://eai.telkom.co.za/Billing_Types" version="2.32" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://eai.telkom.co.za/Billing_Types" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://eai.telkom.co.za/Billing_Types">
+<simpleType name="AccountID_Type">
+<annotation>
+<documentation>Customer sub-account</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="2"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="AccountStatus_Type">
+<annotation>
+<documentation>Account current status on ESP/IN Platform</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="AccountBalance_Type">
+<annotation>
+<documentation>The balance on the customers account</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="20"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<complexType name="AccountDetails_Type">
+<annotation>
+<documentation>container type for the account details structure</documentation>
+</annotation>
+<sequence>
+<element name="AccountID" type="tns:AccountID_Type">
+<annotation>
+<documentation>Indicates how many accounts the client has: In case of a WorldCall prepaid card, Huawei W-CDMA account and GetMo it defaults to 0 and in the case of a Telkom PrepaidFone a main account = 0 and the sub-accounts could be values 1 to 5.</documentation>
+</annotation>
+</element>
+<element name="AccountStatus" type="tns:AccountStatus_Type">
+<annotation>
+<documentation>This value indicates the status of the account on ESP/IN Platform. (e.g. ESP: A = [available] Top-up allowed, L = [locked] Top-up allowed, C = [cancelled] Top-up NOT allowed, E = [expired] Top-up NOT allowed, I = [in use] Top-up NOT allowed, P = [pending] Top-up NOT allowed, IN Platform: 0 = [valid] Top-up NOT allowed - customer should purchase starter pack to activate account, 1 = [active] Top-up allowed, 2 = [out of credit] Top-up allowed, 3 = [suspended] Top-up allowed, 4 = [expired] Top-up NOT allowed, 5 = [dismantle] Top-up NOT allowed Huawei CBS Plaform: [idle] = new prepaid customer, [active] = normal status, [suspend] = call and receive blocked, [disable] = only calls blocked, [pool] = subscriber cancelled.GetMo: default value is active</documentation>
+</annotation>
+</element>
+<element name="AccountBalance" type="tns:AccountBalance_Type">
+<annotation>
+<documentation>Current account balance on the ESP/IN Platform/Huawei CBS Platform.</documentation>
+</annotation>
+</element>
+</sequence>
+</complexType>
+<simpleType name="ActivityCode_Type">
+<annotation>
+<documentation>PYM - Payment Posting BCK - Backout FNTF - Fund Transfer From FNTT - Fund Transfer To RFN - Refund RFNR - Refund Reversal</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="4"/>
+</restriction>
+</simpleType>
+<simpleType name="ActivityDescription_Type">
+<annotation>
+<documentation>A full description of the Activity Reason</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="30"/>
+</restriction>
+</simpleType>
+<simpleType name="ActivityReason_Type">
+<annotation>
+<documentation>This attribute indicates the reason for the activity</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="6"/>
+</restriction>
+</simpleType>
+<simpleType name="Amount_Type">
+<restriction base="decimal">
+<fractionDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="AmountCentsValue_Type">
+<restriction base="long"/>
+</simpleType>
+<simpleType name="AuthorisationNumber_Type">
+<annotation>
+<documentation>With a payment transaction this is a code that gets assigned by the authorizing institution</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+<simpleType name="BAN_type">
+<annotation>
+<documentation>the billing account number (BAN) of a customer. The actual length of a BAN is only 12. The length of 16 is retained for backwards compatibility. Systems shoud send a maximum length of 12 in this field.</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+<simpleType name="BankAccountType_Type">
+<annotation>
+<documentation>The type of back account used, e.g. savings</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="12"/>
+</restriction>
+</simpleType>
+<simpleType name="BankAccountNumber_Type">
+<annotation>
+<documentation>The bank account number associated with the bank account type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="20"/>
+</restriction>
+</simpleType>
+<simpleType name="BankBranchCode_Type">
+<annotation>
+<documentation>The banks branch number</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="8"/>
+</restriction>
+</simpleType>
+<simpleType name="BankBranchName_Type">
+<annotation>
+<documentation>The banks branch name</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="80"/>
+</restriction>
+</simpleType>
+<simpleType name="BankCode_Type">
+<annotation>
+<documentation>The code of the bank</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="20"/>
+</restriction>
+</simpleType>
+<simpleType name="BankName_Type">
+<annotation>
+<documentation>The name of the bank</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="60"/>
+</restriction>
+</simpleType>
+<simpleType name="BillingAccountName_Type">
+<annotation>
+<documentation>Top level tree node on billing hierarchy</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="40"/>
+</restriction>
+</simpleType>
+<simpleType name="BillingAccountTradeName_Type">
+<restriction base="string"/>
+</simpleType>
+<simpleType name="BillingAccountNumber_Type">
+<annotation>
+<documentation>Deprecated. Please use BAN_Type. Telkom Customers' Billing Account Number</documentation>
+</annotation>
+<restriction base="string">
+<length value="13"/>
+</restriction>
+</simpleType>
+<simpleType name="BillingCycle_Type">
+<annotation>
+<documentation>A Number indicating the billing cycle</documentation>
+</annotation>
+<restriction base="integer">
+<minInclusive value="1"/>
+<maxInclusive value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="BillingDateType">
+<annotation>
+<documentation>Date Type of length 19 characters</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="19"/>
+</restriction>
+</simpleType>
+<simpleType name="BillingEmailAddress_Type">
+<annotation>
+<documentation>The email address the customer would like his invoice information to be sent to</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="80"/>
+</restriction>
+</simpleType>
+<simpleType name="BillIndicator_Type">
+<annotation>
+<documentation>The type of bill, e.g. paper, electronic, or both</documentation>
+</annotation>
+<restriction base="short">
+<minInclusive value="1"/>
+<maxInclusive value="4"/>
+<totalDigits value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="BillingSequenceNumber_Type">
+<annotation>
+<documentation>A Number indicating the billing sequence</documentation>
+</annotation>
+<restriction base="integer">
+<minInclusive value="1"/>
+<maxInclusive value="3"/>
+</restriction>
+</simpleType>
+<simpleType name="BranchCode_Type">
+<restriction base="string"/>
+</simpleType>
+<simpleType name="CostCode_Type">
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="40"/>
+</restriction>
+</simpleType>
+<simpleType name="CircuitNumber_Type">
+<annotation>
+<documentation>Service Number. Telex /Outdoor /Matix /Designation Number</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="15"/>
+</restriction>
+</simpleType>
+<simpleType name="ContactNumber_Type">
+<annotation>
+<documentation>A contact number as been given by the Customer</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="15"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="CallingLineID_Type">
+<annotation>
+<documentation>WorldCall Prepaid 16 digit account number</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="21"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="CardExpiryDate_Type">
+<annotation>
+<documentation>The date value when the card will expire - usually in the format mmyy</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="4"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="CardNumber_Type">
+<annotation>
+<documentation>The customers account number</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="16"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="CreditCardNumber_Type">
+<annotation>
+<documentation>Credit Card Number Value</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="19"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="CreditLimit_Type">
+<annotation>
+<documentation>The Customers' credit limit</documentation>
+</annotation>
+<restriction base="double"/>
+</simpleType>
+<simpleType name="CurrencyCodeType">
+<annotation>
+<documentation>ISO 4217 currency code associated with the transaction amount.</documentation>
+</annotation>
+<restriction base="int">
+<maxExclusive value="999"/>
+<minInclusive value="000"/>
+</restriction>
+</simpleType>
+<simpleType name="Currency_Type">
+<restriction base="string">
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="CustomerAccountBalanceType">
+<restriction base="decimal">
+<fractionDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="CustomerIDType">
+<annotation>
+<documentation>Customer's Identity Number</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+<simpleType name="CustomerName_Type">
+<annotation>
+<documentation>Name of the Customer</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="50"/>
+</restriction>
+</simpleType>
+<simpleType name="CustomerNumberType">
+<annotation>
+<documentation>Customer number</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="16" fixed="false"/>
+</restriction>
+</simpleType>
+<simpleType name="CustomerSubtypeType">
+<annotation>
+<documentation>The Customers Subtype Type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="8"/>
+</restriction>
+</simpleType>
+<simpleType name="CustomerTypeType">
+<annotation>
+<documentation>The Customers Type Type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="8"/>
+</restriction>
+</simpleType>
+<simpleType name="CAVVType">
+<annotation>
+<documentation>Cardholder Authentication Verification Value, Authentication Verification Value (AVV) or Universal Cardholder Authentication Field (UCAF) - should be passed to bank in the Funds Reservation transaction signifying that the transaction has been successfully authenticated</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="50"/>
+</restriction>
+</simpleType>
+<simpleType name="CVV2_Type">
+<annotation>
+<documentation>Card Verification Value</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="4"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="DependantExistsIndicator_Type">
+<annotation>
+<documentation>Indicates if there are dependants for associated BAN in Billing Hierarchy</documentation>
+</annotation>
+<restriction base="boolean"/>
+</simpleType>
+<simpleType name="DesignationNumberType">
+<annotation>
+<documentation>Designation number</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="10"/>
+</restriction>
+</simpleType>
+<simpleType name="DiscountCode_Type">
+<restriction base="string">
+<length value="7"/>
+</restriction>
+</simpleType>
+<simpleType name="DiscountDescription_Type">
+<restriction base="string">
+<length value="30"/>
+</restriction>
+</simpleType>
+<simpleType name="ECIFlagType">
+<annotation>
+<documentation>Electronic Commerce Indicator. This is the value that indicates whether the merchant or the card issuer carries the liability of a payment in terms of charge backs that may arise as a result of fraudulent transactions. MasterCard ECI (01,02) 01 - Indicates Merchant liability 02 - Indicates Card Issuer Liability Visa ECI (05,06,07) 05 - Indicates Card Issuer Liability 06 - Indicates Card Issuer Liability 07 - Indicates Merchant Liability</documentation>
+</annotation>
+<restriction base="int">
+<totalDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="EnrolmentFlagType">
+<annotation>
+<documentation>Flag indicating whether the carcholder has enrolled for 3D secude or not</documentation>
+</annotation>
+<restriction base="string">
+<length value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="FinalisationStatus_Type">
+<annotation>
+<documentation>Describe how the transaction was finalised</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="FreeMinutesTotal_Type">
+<restriction base="decimal">
+<fractionDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="FreeMinutesFeatureCode_Type">
+<annotation>
+<documentation>The free minutes feature code Type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="7"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="FreeMinutesPricePlan_Type">
+<annotation>
+<documentation>The free minutes price plan Type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="7"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="FreeMinutesPricePlanDesc_Type">
+<annotation>
+<documentation>The free minutes price plan description Type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="30"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="FreeMinutesUOM_Type">
+<annotation>
+<documentation>The units the free minutes gets measured in Type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="3"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="HierarchyDescription">
+<restriction base="string">
+<length value="40"/>
+</restriction>
+</simpleType>
+<simpleType name="HierarchyID_Type">
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="22"/>
+</restriction>
+</simpleType>
+<simpleType name="HighLevelBAN">
+<restriction base="double"/>
+</simpleType>
+<simpleType name="InvoicePastDueAmountType">
+<restriction base="decimal">
+<fractionDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="InvoicePaymentCodeType">
+<restriction base="string">
+<maxLength value="8"/>
+</restriction>
+</simpleType>
+<simpleType name="InvoicePaymentDueAmountType">
+<restriction base="decimal">
+<fractionDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="InvoicePaymentStatusType">
+<annotation>
+<documentation>The Invoice Payment status Type</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="8"/>
+</restriction>
+</simpleType>
+<simpleType name="InvoiceTotalDueAmountType">
+<restriction base="decimal">
+<fractionDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="IPAddress_Type">
+<annotation>
+<documentation>IP Address of a machine</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="LastReceiptDetails_Type">
+<annotation>
+<documentation>The previous receipt number</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="9"/>
+</restriction>
+</simpleType>
+<simpleType name="LowerLevelBAN">
+<annotation>
+<documentation>Child BAN in Billing Hierarchy</documentation>
+</annotation>
+<restriction base="double"/>
+</simpleType>
+<simpleType name="MaxRowsRequested_Type">
+<annotation>
+<documentation>The number of rows that can be requested</documentation>
+</annotation>
+<restriction base="int">
+<minInclusive value="0"/>
+</restriction>
+</simpleType>
+<simpleType name="MerchantApplicationIdType">
+<annotation>
+<documentation>identifier for the application(system) processing the a CNP payment</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="20"/>
+</restriction>
+</simpleType>
+<simpleType name="MerchantID_Type">
+<annotation>
+<documentation>Identify the merchant registered to do recharge transactions</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="50"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="MerchantPasswordType">
+<annotation>
+<documentation>password use to authenticate that the transaction originated from the particular merchant</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="50"/>
+</restriction>
+</simpleType>
+<simpleType name="NameLocation_Type">
+<annotation>
+<documentation>Value that gets sent with a payment transaction</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="35"/>
+</restriction>
+</simpleType>
+<simpleType name="NameOnCard_Type">
+<annotation>
+<documentation>Name printed on customers credit card</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="40"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="NonEmptyStringType">
+<annotation>
+<documentation>A base type for string definitions which have a minimum length restriction of 1.</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="PackageOrderNumber_Type">
+<annotation>
+<documentation>Clarify's package order number</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="PageNumber_Type">
+<annotation>
+<documentation>The page number to be displayed</documentation>
+</annotation>
+<restriction base="int"/>
+</simpleType>
+<simpleType name="PaginationID_Type">
+<annotation>
+<documentation>A value used to indicate the last record that is returned in the result set</documentation>
+</annotation>
+<restriction base="int"/>
+</simpleType>
+<simpleType name="PaginationIndicator_Type">
+<annotation>
+<documentation>A flag used to indicate that there are more records in teh result set</documentation>
+</annotation>
+<restriction base="boolean"/>
+</simpleType>
+<simpleType name="PaymentActualSequenceNo_Type">
+<annotation>
+<documentation>Distinguishes between activities of the same payment</documentation>
+</annotation>
+<restriction base="integer">
+<minInclusive value="1"/>
+<maxInclusive value="3"/>
+</restriction>
+</simpleType>
+<simpleType name="PaymentMethod_Type">
+<annotation>
+<documentation>The method code used to do the payment</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="PaymentMethodDescription_Type">
+<annotation>
+<documentation>The method description used to do the payment</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="30"/>
+</restriction>
+</simpleType>
+<simpleType name="PaymentMethodId_Type">
+<annotation>
+<documentation>The unique key/identifier of payment method</documentation>
+</annotation>
+<restriction base="integer"/>
+</simpleType>
+<simpleType name="PaymentSequenceNumber_Type">
+<annotation>
+<documentation>Identifies the payment in the Payment Entity</documentation>
+</annotation>
+<restriction base="integer">
+<minInclusive value="1"/>
+<maxInclusive value="9"/>
+</restriction>
+</simpleType>
+<simpleType name="PaymentSource_Type">
+<annotation>
+<documentation>The source used to do the payment</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="PaymentSourceDescription_Type">
+<annotation>
+<documentation>The description of the source used to do the payment</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="60"/>
+</restriction>
+</simpleType>
+<simpleType name="PINType">
+<annotation>
+<documentation>Personal Identification Number</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="4"/>
+<maxLength value="5"/>
+</restriction>
+</simpleType>
+<simpleType name="PortNumber_Type">
+<annotation>
+<documentation>The port number that machine is plugged into</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="PrepaidAccount_type">
+<annotation>
+<documentation>The prepaid account number</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="15"/>
+</restriction>
+</simpleType>
+<simpleType name="ProductID_Type">
+<annotation>
+<documentation>The identification number of a free minutes product (DN)</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+<simpleType name="ProductOrderNumber_Type">
+<annotation>
+<documentation>Clarify's product order number</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="RecordCount_Type">
+<annotation>
+<documentation>a value used to indicate the number of records in the recordset</documentation>
+</annotation>
+<restriction base="int">
+<minInclusive value="0"/>
+</restriction>
+</simpleType>
+<simpleType name="RentalDeal_Type">
+<annotation>
+<documentation>Rental Deal of a Customer</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<complexType name="Result_type">
+<annotation>
+<documentation>The Result Reporting Message Structure</documentation>
+</annotation>
+<sequence>
+<element name="ResultCode">
+<annotation>
+<documentation>Container type for the mandatory result code. Three different statuses: success, fail and reject. - Success is indicated with the value 0. - Failure(indicated that a resend could possible be successful) is represented by negative values - Rejection(indicated that a resend would be refected again) by positive values.</documentation>
+</annotation>
+<simpleType>
+<restriction base="integer"/>
+</simpleType>
+</element>
+<element name="ResultMsgCode" minOccurs="0">
+<annotation>
+<documentation>Container type for the optional result message code. The recommended way is to concatenate the system identifier with the specific error code number.This is only recommended and not enforced in the validation.</documentation>
+</annotation>
+<simpleType>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="64"/>
+</restriction>
+</simpleType>
+</element>
+<element name="ResultMsg" minOccurs="0">
+<annotation>
+<documentation>Container type for the optional detail description of the result message code.</documentation>
+</annotation>
+<simpleType>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="255"/>
+</restriction>
+</simpleType>
+</element>
+</sequence>
+</complexType>
+<simpleType name="ServiceNumberType">
+<annotation>
+<documentation>Designation Number of user</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="16"/>
+</restriction>
+</simpleType>
+<simpleType name="ServiceType">
+<annotation>
+<documentation>type of service. PrepaidFone(1), WorldCall(2), WCDMA</documentation>
+</annotation>
+<restriction base="int">
+<maxInclusive value="9"/>
+<minInclusive value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="SessionCumulativeDay_Type">
+<restriction base="integer">
+<minInclusive value="1"/>
+<maxInclusive value="31"/>
+</restriction>
+</simpleType>
+<simpleType name="SessionDate_Type">
+<annotation>
+<documentation>The date the network was in session</documentation>
+</annotation>
+<restriction base="dateTime"/>
+</simpleType>
+<simpleType name="SessionID_Type">
+<annotation>
+<documentation>Identify all transactions between the banks, ATM's and TELKOM for a day</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="20"/>
+</restriction>
+</simpleType>
+<simpleType name="SiteDetails_Type">
+<annotation>
+<documentation>More information around the site of ip address</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="StatusType">
+<annotation>
+<documentation>Generic type for status</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="20"/>
+</restriction>
+</simpleType>
+<simpleType name="SiteName_Type">
+<annotation>
+<documentation>The site of ip address</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="SuspensionFlagType">
+<annotation>
+<documentation>The Suspension Flag Type</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="1"/>
+<enumeration value="Y"/>
+<enumeration value="N"/>
+</restriction>
+</simpleType>
+<simpleType name="TerminalID_Type">
+<annotation>
+<documentation>A value that uniquely identify the terminal per Merchant, where the transaction originated from</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="10"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="TopUpAmount_Type">
+<annotation>
+<documentation>The amounts used with all the top up transactions for WorldCall or Prepaid</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="15"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="TotalSites_Type">
+<annotation>
+<documentation>The total number of sites</documentation>
+</annotation>
+<restriction base="int"/>
+</simpleType>
+<simpleType name="TransactionID_Type">
+<annotation>
+<documentation>Unique identification for purchase transactions</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="50"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="TransactionType_Type">
+<annotation>
+<documentation>Describes the type of transaction thats flowing</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="3"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="TopUpReferenceNumber_Type">
+<annotation>
+<documentation>A unique number that will tag the transaction through all processes</documentation>
+</annotation>
+<restriction base="string">
+<maxLength value="10"/>
+<minLength value="1"/>
+</restriction>
+</simpleType>
+<simpleType name="TotalObligationType">
+<restriction base="decimal">
+<fractionDigits value="2"/>
+</restriction>
+</simpleType>
+<simpleType name="TotalRecords_Type">
+<restriction base="integer"/>
+</simpleType>
+<simpleType name="UsageDeal_Type">
+<annotation>
+<documentation>Uasge Bundle of a Customer</documentation>
+</annotation>
+<restriction base="string"/>
+</simpleType>
+<simpleType name="UTCCode_Type">
+<restriction base="string">
+<length value="7"/>
+</restriction>
+</simpleType>
+<simpleType name="UTCDescription_Type">
+<restriction base="string">
+<length value="30"/>
+</restriction>
+</simpleType>
+<simpleType name="VoucherNumber_Type">
+<restriction base="string">
+<maxLength value="16"/>
+<pattern value="[0-9]*"/>
+</restriction>
+</simpleType>
+<simpleType name="ServicePackCode_Type">
+<annotation>
+<documentation>Value which identifies the specific bundle to be recharged</documentation>
+</annotation>
+<restriction base="string">
+<minLength value="1"/>
+<maxLength value="10"/>
+</restriction>
+</simpleType>
+</schema>
+<schema targetNamespace="http://eai.telkom.co.za/Billing/TopUpEndNotify" version="0.01" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://eai.telkom.co.za/Billing/TopUpEndNotify" xmlns:T="http://eai.telkom.co.za/Billing_Types" xmlns="http://www.w3.org/2001/XMLSchema">
+<import namespace="http://eai.telkom.co.za/Billing_Types"/>
+<element name="TopUpEndNotify">
+<annotation>
+<documentation>This service will call the DPRS to notify them that the top-up transaction has been terminated. This will be an asynchronous transaction</documentation>
+</annotation>
+<complexType>
+<choice>
+<element name="Request" type="tns:Request_type"/>
+<element name="Response" type="tns:Response_type"/>
+</choice>
+</complexType>
+</element>
+<!-- -->
+<!-- Request Type definition -->
+<complexType name="Request_type">
+<sequence>
+<element name="TransactionType" type="T:TransactionType_Type"/>
+<element name="TRN" type="T:TopUpReferenceNumber_Type"/>
+<element name="FinalisationStatus" type="T:FinalisationStatus_Type"/>
+</sequence>
+</complexType>
+<complexType name="Response_type">
+<sequence>
+<element name="Result" type="T:Result_type"/>
+</sequence>
+</complexType>
+</schema>
+<xs:schema targetNamespace="http://eai.telkom.co.za/Billing/Cardholder3DSAuthenticationResultVerify" version="0.01" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://eai.telkom.co.za/Billing_Types" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bil="http://eai.telkom.co.za/Billing/Cardholder3DSAuthenticationResultVerify">
+<xs:import namespace="http://eai.telkom.co.za/Billing_Types"/>
+<xs:element name="Cardholder3DSAuthenticationResultVerify">
+<xs:annotation>
+<xs:documentation>The following service is used to verify the result of the 3D secure authentication process with the merchant authentication processing system</xs:documentation>
+</xs:annotation>
+<xs:complexType>
+<xs:choice>
+<xs:element name="Request" type="bil:RequestType"/>
+<xs:element name="Response" type="bil:ResponseType"/>
+</xs:choice>
+</xs:complexType>
+</xs:element>
+<xs:complexType name="PayloadType">
+<xs:annotation>
+<xs:documentation>Container type for the complex element Payload</xs:documentation>
+</xs:annotation>
+<xs:sequence>
+<xs:element name="CAVV">
+<xs:annotation>
+<xs:documentation>Cardholder Authentication Verification Value, Authentication Verification Value (AVV) or Universal Cardholder Authentication Field (UCAF) - should be passed to bank in the Funds Reservation transaction signifying that the transaction has been successfully authenticated</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:minLength value="1"/>
+<xs:maxLength value="50"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="TransactionXId" type="tns:TransactionID_Type">
+<xs:annotation>
+<xs:documentation>A unique transaction Xid generated by the merchant authentication processing system(Banserv Centinel)</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="ECIFlag" type="tns:ECIFlagType">
+<xs:annotation>
+<xs:documentation>Electronic Commerce Indicator. This is the value that indicates whether the merchant or the card issuer carries the liability of a payment in terms of charge backs that may arise as a result of fraudulent transactions. MasterCard ECI (01,02) 01 - Indicates Merchant liability 02 - Indicates Card Issuer Liability Visa ECI (05,06,07) 05 - Indicates Card Issuer Liability 06 - Indicates Card Issuer Liability 07 - Indicates Merchant Liability</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="EnrolmentFlag" type="tns:EnrolmentFlagType">
+<xs:annotation>
+<xs:documentation>Flag indicating whether the carcholder has enrolled for 3D secude or not</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="PAResStatus">
+<xs:annotation>
+<xs:documentation>The encoded payment authentication response status generated by the merchant authentication processing system(MAPS) Y = Successful authorised transaction N = Failed transaction - Not authorised U = Unable to complete authorisation transaction A = Successful Attempts authorisation transaction</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:length value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="PAResSignatureVerification">
+<xs:annotation>
+<xs:documentation>Payer authentication respone signature status identfier -- indicates whether the signature of the PARes value has been validated and if it can be trusted. Y = signature of the PARes value was validated and the message contents can be trusted N = Indicates that the PARes could not be validated (tampering, certificate expired, etc.) and the result should not be trusted.</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:length value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ResponseType">
+<xs:annotation>
+<xs:documentation>Container type for the complex element Response</xs:documentation>
+</xs:annotation>
+<xs:sequence>
+<xs:element name="Result" type="tns:Result_type"/>
+<xs:element name="Payload" type="bil:PayloadType" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="RequestType">
+<xs:annotation>
+<xs:documentation>Container type for the complex element Request</xs:documentation>
+</xs:annotation>
+<xs:sequence>
+<xs:element name="MerchantId" type="tns:MerchantID_Type">
+<xs:annotation>
+<xs:documentation>Identifier used to identify the store merchant</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="MerchantPassword" type="tns:MerchantPasswordType">
+<xs:annotation>
+<xs:documentation>Passowrd used to authenticate that the transaction originated from the merchant represented by the transaction details</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="MerchantProcessorId" type="tns:MerchantApplicationIdType">
+<xs:annotation>
+<xs:documentation>identifier of the application that is processing the transaction</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="TransactionType">
+<xs:annotation>
+<xs:documentation>transaction type identifies the method of payment used for the transaction. e.g P for Paypal or C for /Debit/Credit card</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="tns:TransactionType_Type">
+<xs:maxLength value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="TransactionId" type="tns:TransactionID_Type">
+<xs:annotation>
+<xs:documentation>A unique transaction identifier generated by the merchant authentication processing system(Banserv Centinel)</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="PayerAuthenticationResponse">
+<xs:annotation>
+<xs:documentation>The encoded payer authentication response message generated by the card issuer's access control server</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:minLength value="1"/>
+<xs:maxLength value="600"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
+<xs:schema targetNamespace="http://eai.telkom.co.za/Billing/Cardholder3DSEnrolmentStatusQuery" version="0.01" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://eai.telkom.co.za/Billing_Types" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bil="http://eai.telkom.co.za/Billing/Cardholder3DSEnrolmentStatusQuery">
+<xs:import namespace="http://eai.telkom.co.za/Billing_Types"/>
+<xs:element name="Cardholder3DSEnrolmentStatusQuery">
+<xs:annotation>
+<xs:documentation>The service is used to retreive the cardholder's enrolment status for 3D secure authentication on the merchant authentication processing system(Centinel)</xs:documentation>
+</xs:annotation>
+<xs:complexType>
+<xs:choice>
+<xs:element name="Request" type="bil:RequestType"/>
+<xs:element name="Response" type="bil:ResponseType"/>
+</xs:choice>
+</xs:complexType>
+</xs:element>
+<xs:complexType name="PayloadType">
+<xs:annotation>
+<xs:documentation>Container type for the complex element Payload</xs:documentation>
+</xs:annotation>
+<xs:sequence>
+<xs:element name="TransactionId" type="tns:TransactionID_Type">
+<xs:annotation>
+<xs:documentation>A unique transaction identifier generated by the merchant authentication processing system(Banserv Centinel)</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="EnrolmentFlag">
+<xs:annotation>
+<xs:documentation>Flag indicating whether the carcholder has enrolled for 3D secude or not</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:length value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="PayerAutheticationRequest" minOccurs="0">
+<xs:annotation>
+<xs:documentation>The encoded authentication request generated by the merchant authentication processing system(MAPS)</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:maxLength value="600"/>
+<xs:minLength value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="AccessControlServerURL" minOccurs="0">
+<xs:annotation>
+<xs:documentation>This is the fully qualified URL of the Card Issuer's access control server. This is used by the merchant to redirect the cardholder.</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:maxLength value="225"/>
+<xs:minLength value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="ECIFlag">
+<xs:annotation>
+<xs:documentation>Electronic Commerce Indicator. This is the value that indicates whether the merchant or the card issuer carries the liability of a payment in terms of charge backs that may arise as a result of fraudulent transactions. MasterCard ECI (01,02) 01 - Indicates Merchant liability 02 - Indicates Card Issuer Liability Visa ECI (05,06,07) 05 - Indicates Card Issuer Liability 06 - Indicates Card Issuer Liability 07 - Indicates Merchant Liability</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:int">
+<xs:totalDigits value="2"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="RequestType">
+<xs:annotation>
+<xs:documentation>Container type for the complex element Request</xs:documentation>
+</xs:annotation>
+<xs:sequence>
+<xs:element name="MerchantId" type="tns:MerchantID_Type">
+<xs:annotation>
+<xs:documentation>Identifier used to identify the store merchant</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="MerchantPassword" type="tns:MerchantPasswordType">
+<xs:annotation>
+<xs:documentation>Passowrd used to authenticate that the transaction originated from the merchant represented by the transaction details</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="MerchantProcessorId" type="tns:MerchantApplicationIdType">
+<xs:annotation>
+<xs:documentation>identifier of the application that is processing the transaction</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="CardNumber" type="tns:CreditCardNumber_Type">
+<xs:annotation>
+<xs:documentation>card number</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="CardExpiry">
+<xs:annotation>
+<xs:documentation>Card expiry details</xs:documentation>
+</xs:annotation>
+<xs:complexType>
+<xs:sequence>
+<xs:element name="Month">
+<xs:annotation>
+<xs:documentation>card expiry month</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:int">
+<xs:minInclusive value="01"/>
+<xs:maxInclusive value="12"/>
+<xs:totalDigits value="2"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="Year" type="xs:gYear">
+<xs:annotation>
+<xs:documentation>card expiry year</xs:documentation>
+</xs:annotation>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="TransactionType">
+<xs:annotation>
+<xs:documentation>transaction type identifies the method of payment used for the transaction. e.g P for Paypal or C for /Debit/Credit card</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="tns:TransactionType_Type">
+<xs:maxLength value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="OrderNumber">
+<xs:annotation>
+<xs:documentation>Reference number of the transaction within the merchant commerce system. e.g. TRN or OrderNumber</xs:documentation>
+</xs:annotation>
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:minLength value="1"/>
+<xs:maxLength value="50"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="Amount" type="tns:AmountCentsValue_Type">
+<xs:annotation>
+<xs:documentation>Value representing the transaction amount in minor denomination. i.e. without decimalisation or punctuation</xs:documentation>
+</xs:annotation>
+</xs:element>
+<xs:element name="CurrencyCode" type="tns:CurrencyCodeType">
+<xs:annotation>
+<xs:documentation>ISO 4217 currency code associated with the transaction amount.</xs:documentation>
+</xs:annotation>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ResponseType">
+<xs:annotation>
+<xs:documentation>Container type for the complex element Response</xs:documentation>
+</xs:annotation>
+<xs:sequence>
+<xs:element name="Result" type="tns:Result_type"/>
+<xs:element name="Payload" type="bil:PayloadType" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
+<s:schema targetNamespace="http://www.telkom.co.za" elementFormDefault="qualified" xmlns:tksa0="http://eai.telkom.co.za/Billing/TopUpRechargeManage">
+<s:import namespace="http://eai.telkom.co.za/Billing/TopUpRechargeManage"/>
+<s:element name="recharge">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa0:TopUpRechargeManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa0:TopUpRechargeManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeFaultCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa0:TopUpRechargeManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeResponse">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa0:TopUpRechargeManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+<s:element name="rechargeFaultCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+</s:schema>
+<s:schema targetNamespace="http://www.telkom.co.za" elementFormDefault="qualified" xmlns:tksa1="http://eai.telkom.co.za/Billing/TopUpEnquiryManage">
+<s:import namespace="http://eai.telkom.co.za/Billing/TopUpEnquiryManage"/>
+<s:element name="validateAccount">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa1:TopUpEnquiryManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="validateAccountCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa1:TopUpEnquiryManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="validateAccountFaultCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa1:TopUpEnquiryManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="validateAccountResponse">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa1:TopUpEnquiryManage"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="validateAccountCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+<s:element name="validateAccountFaultCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+</s:schema>
+<s:schema targetNamespace="http://www.telkom.co.za" elementFormDefault="qualified" xmlns:tksa2="http://eai.telkom.co.za/Billing/TopUpEndNotify">
+<s:import namespace="http://eai.telkom.co.za/Billing/TopUpEndNotify"/>
+<s:element name="rechargeCancel">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa2:TopUpEndNotify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeCancelCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa2:TopUpEndNotify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeCancelFaultCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa2:TopUpEndNotify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeCancelResponse">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa2:TopUpEndNotify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="rechargeCancelCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+<s:element name="rechargeCancelFaultCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+</s:schema>
+<s:schema targetNamespace="http://www.telkom.co.za" elementFormDefault="qualified" xmlns:tksa3="http://eai.telkom.co.za/Billing/Cardholder3DSAuthenticationResultVerify">
+<s:import namespace="http://eai.telkom.co.za/Billing/Cardholder3DSAuthenticationResultVerify"/>
+<s:element name="authenticate3DSResult">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa3:Cardholder3DSAuthenticationResultVerify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="authenticate3DSResultCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa3:Cardholder3DSAuthenticationResultVerify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="authenticate3DSResultFaultCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa3:Cardholder3DSAuthenticationResultVerify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="authenticate3DSResultResponse">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa3:Cardholder3DSAuthenticationResultVerify"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="authenticate3DSResultCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+<s:element name="authenticate3DSResultFaultCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+</s:schema>
+<s:schema targetNamespace="http://www.telkom.co.za" elementFormDefault="qualified" xmlns:tksa4="http://eai.telkom.co.za/Billing/Cardholder3DSEnrolmentStatusQuery">
+<s:import namespace="http://eai.telkom.co.za/Billing/Cardholder3DSEnrolmentStatusQuery"/>
+<s:element name="check3DSEnrolment">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa4:Cardholder3DSEnrolmentStatusQuery"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="check3DSEnrolmentCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa4:Cardholder3DSEnrolmentStatusQuery"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="check3DSEnrolmentFaultCallback">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa4:Cardholder3DSEnrolmentStatusQuery"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="check3DSEnrolmentResponse">
+<s:complexType>
+<s:sequence>
+<s:element ref="tksa4:Cardholder3DSEnrolmentStatusQuery"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:element name="check3DSEnrolmentCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+<s:element name="check3DSEnrolmentFaultCallbackResponse">
+<s:complexType>
+<s:sequence/>
+</s:complexType>
+</s:element>
+</s:schema>
+</wsdl:types>
+<wsdl:message name="rechargeSoapIn">
+<wsdl:part name="parameters" element="tksa:recharge"/>
+</wsdl:message>
+<wsdl:message name="rechargeSoapOut">
+<wsdl:part name="parameters" element="tksa:rechargeResponse"/>
+</wsdl:message>
+<wsdl:message name="rechargeCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:rechargeCallback"/>
+</wsdl:message>
+<wsdl:message name="rechargeCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:rechargeCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="rechargeFaultCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:rechargeFaultCallback"/>
+</wsdl:message>
+<wsdl:message name="rechargeFaultCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:rechargeFaultCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="validateAccountSoapIn">
+<wsdl:part name="parameters" element="tksa:validateAccount"/>
+</wsdl:message>
+<wsdl:message name="validateAccountSoapOut">
+<wsdl:part name="parameters" element="tksa:validateAccountResponse"/>
+</wsdl:message>
+<wsdl:message name="validateAccountCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:validateAccountCallback"/>
+</wsdl:message>
+<wsdl:message name="validateAccountCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:validateAccountCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="validateAccountFaultCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:validateAccountFaultCallback"/>
+</wsdl:message>
+<wsdl:message name="validateAccountFaultCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:validateAccountFaultCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="rechargeCancelSoapIn">
+<wsdl:part name="parameters" element="tksa:rechargeCancel"/>
+</wsdl:message>
+<wsdl:message name="rechargeCancelSoapOut">
+<wsdl:part name="parameters" element="tksa:rechargeCancelResponse"/>
+</wsdl:message>
+<wsdl:message name="rechargeCancelCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:rechargeCancelCallback"/>
+</wsdl:message>
+<wsdl:message name="rechargeCancelCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:rechargeCancelCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="rechargeCancelFaultCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:rechargeCancelFaultCallback"/>
+</wsdl:message>
+<wsdl:message name="rechargeCancelFaultCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:rechargeCancelFaultCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="authenticate3DSResultSoapIn">
+<wsdl:part name="parameters" element="tksa:authenticate3DSResult"/>
+</wsdl:message>
+<wsdl:message name="authenticate3DSResultSoapOut">
+<wsdl:part name="parameters" element="tksa:authenticate3DSResultResponse"/>
+</wsdl:message>
+<wsdl:message name="authenticate3DSResultCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:authenticate3DSResultCallback"/>
+</wsdl:message>
+<wsdl:message name="authenticate3DSResultCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:authenticate3DSResultCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="authenticate3DSResultFaultCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:authenticate3DSResultFaultCallback"/>
+</wsdl:message>
+<wsdl:message name="authenticate3DSResultFaultCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:authenticate3DSResultFaultCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="check3DSEnrolmentSoapIn">
+<wsdl:part name="parameters" element="tksa:check3DSEnrolment"/>
+</wsdl:message>
+<wsdl:message name="check3DSEnrolmentSoapOut">
+<wsdl:part name="parameters" element="tksa:check3DSEnrolmentResponse"/>
+</wsdl:message>
+<wsdl:message name="check3DSEnrolmentCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:check3DSEnrolmentCallback"/>
+</wsdl:message>
+<wsdl:message name="check3DSEnrolmentCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:check3DSEnrolmentCallbackResponse"/>
+</wsdl:message>
+<wsdl:message name="check3DSEnrolmentFaultCallbackSoapIn">
+<wsdl:part name="parameters" element="tksa:check3DSEnrolmentFaultCallback"/>
+</wsdl:message>
+<wsdl:message name="check3DSEnrolmentFaultCallbackSoapOut">
+<wsdl:part name="parameters" element="tksa:check3DSEnrolmentFaultCallbackResponse"/>
+</wsdl:message>
+<wsdl:portType name="BillingSoap">
+<wsdl:operation name="recharge">
+<wsdl:input message="tksa:rechargeSoapIn"/>
+<wsdl:output message="tksa:rechargeSoapOut"/>
+<wsdl:fault name="rechargeFault" message="tksa:rechargeSoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="rechargeCallback">
+<wsdl:input message="tksa:rechargeCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="rechargeFaultCallback">
+<wsdl:input message="tksa:rechargeFaultCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="validateAccount">
+<wsdl:input message="tksa:validateAccountSoapIn"/>
+<wsdl:output message="tksa:validateAccountSoapOut"/>
+<wsdl:fault name="validateAccountFault" message="tksa:validateAccountSoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="validateAccountCallback">
+<wsdl:input message="tksa:validateAccountCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="validateAccountFaultCallback">
+<wsdl:input message="tksa:validateAccountFaultCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="rechargeCancel">
+<wsdl:input message="tksa:rechargeCancelSoapIn"/>
+<wsdl:output message="tksa:rechargeCancelSoapOut"/>
+<wsdl:fault name="rechargeCancelFault" message="tksa:rechargeCancelSoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="rechargeCancelCallback">
+<wsdl:input message="tksa:rechargeCancelCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="rechargeCancelFaultCallback">
+<wsdl:input message="tksa:rechargeCancelFaultCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="authenticate3DSResult">
+<wsdl:input message="tksa:authenticate3DSResultSoapIn"/>
+<wsdl:output message="tksa:authenticate3DSResultSoapOut"/>
+<wsdl:fault name="authenticate3DSResultFault" message="tksa:authenticate3DSResultSoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="authenticate3DSResultCallback">
+<wsdl:input message="tksa:authenticate3DSResultCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="authenticate3DSResultFaultCallback">
+<wsdl:input message="tksa:authenticate3DSResultFaultCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="check3DSEnrolment">
+<wsdl:input message="tksa:check3DSEnrolmentSoapIn"/>
+<wsdl:output message="tksa:check3DSEnrolmentSoapOut"/>
+<wsdl:fault name="check3DSEnrolmentFault" message="tksa:check3DSEnrolmentSoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="check3DSEnrolmentCallback">
+<wsdl:input message="tksa:check3DSEnrolmentCallbackSoapIn"/>
+</wsdl:operation>
+<wsdl:operation name="check3DSEnrolmentFaultCallback">
+<wsdl:input message="tksa:check3DSEnrolmentFaultCallbackSoapIn"/>
+</wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="BillingSoap" type="tksa:BillingSoap">
+<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<wsdl:operation name="recharge">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/recharge"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+<wsdl:fault name="rechargeFault">
+<soap:fault name="rechargeFault" use="literal"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="rechargeCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/rechargeCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="rechargeFaultCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/rechargeFaultCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="validateAccount">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/validateAccount"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+<wsdl:fault name="validateAccountFault">
+<soap:fault name="validateAccountFault" use="literal"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="validateAccountCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/validateAccountCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="validateAccountFaultCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/validateAccountFaultCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="rechargeCancel">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/rechargeCancel"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+<wsdl:fault name="rechargeCancelFault">
+<soap:fault name="rechargeCancelFault" use="literal"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="rechargeCancelCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/rechargeCancelCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="rechargeCancelFaultCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/rechargeCancelFaultCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="authenticate3DSResult">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/authenticate3DSResult"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+<wsdl:fault name="authenticate3DSResultFault">
+<soap:fault name="authenticate3DSResultFault" use="literal"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="authenticate3DSResultCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/authenticate3DSResultCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="authenticate3DSResultFaultCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/authenticate3DSResultFaultCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="check3DSEnrolment">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/check3DSEnrolment"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+<wsdl:fault name="check3DSEnrolmentFault">
+<soap:fault name="check3DSEnrolmentFault" use="literal"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="check3DSEnrolmentCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/check3DSEnrolmentCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+<wsdl:operation name="check3DSEnrolmentFaultCallback">
+<soap:operation style="document" soapAction="http://www.telkom.co.za/check3DSEnrolmentFaultCallback"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+</wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="Billing">
+<wsdl:port name="BillingSoap" binding="tksa:BillingSoap">
+<soap:address location="http://cdih-ep-owsm01.telkom.co.za:7777/gateway/services/Billing-EI-ESB"/>
+<wswa:UsingAddressing wsdl:required="true"/>
+</wsdl:port>
+</wsdl:service>
+</wsdl:definitions>

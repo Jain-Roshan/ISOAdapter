@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:camel="http://camel.apache.org/schema/blueprint"
+    xmlns:cxf="http://camel.apache.org/schema/blueprint/cxf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd              http://camel.apache.org/schema/blueprint/cxf http://camel.apache.org/schema/blueprint/cxf/camel-cxf.xsd              http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+    <cxf:rsServer address="http://0.0.0.0:8080/service" id="restService" serviceClass="com.telkom.service.Service"/>
+    <bean class="com.telkom.route.ISOAdapterRoute" id="EntryRoute"/>
+    <bean
+        class="org.apache.camel.component.properties.PropertiesComponent" id="properties">
+        <property name="location" value="classpath:camelconfig.properties"/>
+    </bean>
+    <camelContext id="camelId" xmlns="http://camel.apache.org/schema/blueprint">
+        <routeBuilder ref="EntryRoute"/>
+    </camelContext>
+</blueprint>
